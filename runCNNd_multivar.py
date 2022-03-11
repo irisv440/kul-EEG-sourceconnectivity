@@ -74,7 +74,7 @@ all_r2_sd=[]
 all_r2_averages=[]
 all_significanceweights1=[]
 all_significanceweights2=[]
-
+#all_significanceweights3=[]
 
 for num in range(0,num_datasets): 
     data=alldata[num]
@@ -85,11 +85,13 @@ for num in range(0,num_datasets):
 
     for k in range(0,3): # targetseries
         
+        targetseries=k
         r2scores=[]
         r2_sds=[]
         r2_averages=[]
         significanceweights1=[]
         significanceweights2=[]
+        #significanceweights3=[]
     
         for j in range(0,len(predictorlist)):
         
@@ -97,20 +99,21 @@ for num in range(0,num_datasets):
             if j==0:
                 predictor1=0  
                 predictor2=1
-                targetseries=k 
+                 
             elif j==1:
                 predictor1=1  
                 predictor2=2
-                targetseries=k
+               
             else:
                predictor1=0  
                predictor2=2
-               targetseries=k    
+              
             
             allscores=[]
             testdiff_list=[]
             testdiff1_list=[]
             testdiff2_list=[]
+            #testdiff3_list=[] #test3_differences to be added in findCONN, as well as testdiff3_list.append(test3_differences)
             trainingdiff_list=[]
             significancelist=[]
             times_avg5_runs=0
@@ -130,13 +133,16 @@ for num in range(0,num_datasets):
             time=time+times_avg5_runs
             new_testdiff1=np.mean(testdiff1_list)
             new_testdiff2=np.mean(testdiff2_list)
+            #new_testdiff3=np.mean(testdiff3_list)
             new_diff=np.mean(trainingdiff_list)
             significance_weight1=new_testdiff1/new_diff
             significance_weight2=new_testdiff2/new_diff
+            #significance_weight3=new_testdiff3/new_diff
             average_r2 = np.mean(allscores) # take mean of the whole list
             r2_sd=np.std(allscores)
             score_matrix[j][k]=round(average_r2,4)
             
+            # Significance determination for each predictor seperately (currently for 2 predictors)
             if new_testdiff1>(new_diff*significance):        
                     print("Significance= ", significance_weight1, "R2_score average =", round(average_r2, 4))
                     matrix1[j][predictor1][k]=0 
@@ -159,7 +165,7 @@ for num in range(0,num_datasets):
                 if significance_weight2>0.7 or average_r2<0: 
                     print("Significance =", round(significance_weight2, 4))
                     print('Connectivity for predictor ',predictor2, ' and target ', k, ' NOT significant')
-                else:#%was 0.5
+                else:# % was 0.5
                     matrix1[j][predictor2][k]=round(significance_weight2, 4)
                     print("R2_score average =", round(average_r2, 4), "Total traintime= ", totaltime)
                     print("Significance =", round(significance_weight2, 4))
@@ -170,6 +176,7 @@ for num in range(0,num_datasets):
             r2_sds.append(r2_sd)
             significanceweights1.append(significance_weight1)
             significanceweights2.append(significance_weight2)
+            #significanceweights3.append(significance_weight3)
 
             
 
@@ -177,7 +184,7 @@ for num in range(0,num_datasets):
         all_r2_sd.append(r2_sds) # average to report over five datasets
         all_significanceweights1.append(significanceweights1)
         all_significanceweights2.append(significanceweights2)
-  
+        #all_significanceweights3.append(significanceweights3)
 
     # score matrix for one dataset
     print(score_matrix)
@@ -199,7 +206,7 @@ TIME4=all_times[3]-TIME3
 TIME5=all_times[4]-TIME4
 average_TIME_per_dataset= (TIME1+TIME2+TIME3+TIME4+TIME5)/5
 TIME_IN_SEC=average_TIME_per_dataset/1000
-sd_time_per_dataset=(np.std(np.array([TIME1, TIME2, TIME3,TIME4,TIME5])))/1000
+sd_time_per_dataset=(np.std(np.array([TIME1, TIME2, TIME3, TIME4, TIME5])))/1000
 
 # #Export measures 
 measures={"Name:": name, "Sig_cutoff": 0.70, "Traintime per dataset": TIME_IN_SEC, "SD Time per dataset=": sd_time_per_dataset, "kernel width": width_of_kernel, "R2 Y": average_r2,"R2_SD":all_r2_sd,"R2_arrays_avgs":all_r2_averages, "MATRIX1 ": all_matrices[0], "m1 per pred": all_m1[0], "MATRIX2: ": all_matrices[1], "m2 per pred": all_m1[1],"MATRIX3: ": all_matrices[2], "m3 per pred": all_m1[2],"MATRIX4: ": all_matrices[3],"m4 per pred": all_m1[3],"MATRIX5: ": all_matrices[4], "m5 per pred": all_m1[4],"Sign_per_Dataset pred1: ": all_significanceweights1, "Sign_per_Dataset pred2: ": all_significanceweights2}
