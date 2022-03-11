@@ -113,7 +113,7 @@ for num in range(0,num_datasets):
             testdiff_list=[]
             testdiff1_list=[]
             testdiff2_list=[]
-            #testdiff3_list=[] #test3_differences to be added in findCONN, as well as testdiff3_list.append(test3_differences)
+            #testdiff3_list=[] #test3_differences to be added in function findCONN (below)
             trainingdiff_list=[]
             significancelist=[]
             times_avg5_runs=0
@@ -127,6 +127,7 @@ for num in range(0,num_datasets):
                 allscores.append(np.array(r2_scorelist)) 
                 testdiff1_list.append(test1_differences)
                 testdiff2_list.append(test2_differences)
+                #testdiff3_list.append(test3_differences)
                 trainingdiff_list.append(training_differences)
                 totaltime=totaltime+runtime
             times_avg5_runs=times_avg5_runs + totaltime
