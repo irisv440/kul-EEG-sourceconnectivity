@@ -3,7 +3,7 @@
 Created on Sat Apr 10 16:26:12 2021
 
 Now used for two-to-one predictions but can be adapted for more predictors.
-For 3 time series: uncomment 'X2'
+For 3 time series: uncomment 'X2' and predictor3
 
 @author: irisv
 """
@@ -78,26 +78,33 @@ def findCONN(data, columns, window_size, fsize, significance, amount_of_predicto
    
     # Copy predictors to get their shuffled version 
     pm_predictor1=copy.copy(df_data[predictor1])
-    pm_predictor2=copy.copy(df_data[predictor2]) 
+    pm_predictor2=copy.copy(df_data[predictor2])
+    #pm_predictor3=copy.copy(df_data[predictor3]) 
     random.shuffle(pm_predictor1)
     random.shuffle(pm_predictor2) 
+    #random.shuffle(pm_predictor3) 
     shuffled_predictor1= pm_predictor1
     shuffled_predictor2=pm_predictor2
+    #shuffled_predictor3=pm_predictor3
      
     # Reshape      
     (X, y) = window_data(df_data, window_size, predictor1, target) 
-    (X1, _) = window_data(df_data, window_size, predictor2, target) 
+    (X1, _) = window_data(df_data, window_size, predictor2, target)
+    #(X2, _) = window_data(df_data, window_size, predictor3, target) 
     shuffledX=window_permutations(shuffled_predictor1, window_size)
     shuffledX1=window_permutations(shuffled_predictor2, window_size)
+    #shuffledX2=window_permutations(shuffled_predictor3, window_size)
   
     # Cross-validation for timeseries example https://medium.com/keita-starts-data-science/time-series-split-with-scikit-learn-74f5be38489e
     r2_list=[]
     testdiff1_list=[]
     testdiff2_list=[]
+    #testdiff3_list=[]
     trainingloss_avg=[]
     diff_list=[]
     mse_testloss_shuffled_pred1=[]
     mse_testloss_shuffled_pred2=[]
+    # mse_testloss_shuffled_pred3=[]
     executiontime_list=[]
     i=1
     
@@ -107,19 +114,22 @@ def findCONN(data, columns, window_size, fsize, significance, amount_of_predicto
             test_index=remove_last_element(test_index, window_size)
         X_train, X_test = X[train_index], X[test_index]
         X1_train, X1_test = X1[train_index], X1[test_index]
+        #X2_train, X2_test = X2[train_index], X2[test_index]
         y_train, y_test = y[train_index], y[test_index]
     
         shuffledX_train, shuffledX_test=shuffledX[train_index], shuffledX[test_index]
         shuffledX1_train, shuffledX1_test =shuffledX1[train_index],shuffledX1[test_index] 
+        #shuffledX2_train, shuffledX2_test =shuffledX2[train_index],shuffledX2[test_index] 
         
         # Reshape Traindata
         X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], 1)) # example shape (1194, 5, 1)
         X1_train = X1_train.reshape((X1_train.shape[0], X1_train.shape[1], 1))
+        #X2_train = X2_train.reshape((X2_train.shape[0], X2_train.shape[1], 1))
         shuffledX_train=shuffledX_train.reshape((shuffledX_train.shape[0], shuffledX_train.shape[1], 1))
         shuffledX1_train=shuffledX1_train.reshape((shuffledX1_train.shape[0], shuffledX1_train.shape[1], 1))
-        #X2_train = X2_train.reshape((X2_train.shape[0], X2_train.shape[1], 1))
+        #shuffledX2_train=shuffledX2_train.reshape((shuffledX2_train.shape[0], shuffledX2_train.shape[1], 1))
         Xdata_train=np.concatenate((X_train, X1_train),axis=2)
-        #Xdata_train=np.concatenate((X_train, X1_train,X2_train),axis=2)# 
+        #Xdata_train=np.concatenate((X_train, X1_train,X2_train),axis=2)# 3 predictors
 
         # Reshape Testdata
         X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], 1)) # (293, 5, 1)
@@ -128,8 +138,8 @@ def findCONN(data, columns, window_size, fsize, significance, amount_of_predicto
         shuffledX1_test=shuffledX1_test.reshape((shuffledX1_test.shape[0], shuffledX1_test.shape[1], 1))
         #X2_test = X2_test.reshape((X2_test.shape[0], X2_test.shape[1], 1))
         Xdata_test=np.concatenate((X_test, X1_test),axis=2) # (299,6,5)
-        #Xdata_test=np.concatenate((X_test, X1_test,X2_test),axis=2)
-        shuffledXdata_test=np.concatenate((shuffledX_test, shuffledX1_test),axis=2) # (299,6,5)
+        #Xdata_test=np.concatenate((X_test, X1_test,X2_test),axis=2)# 3 predictors
+        shuffledXdata_test=np.concatenate((shuffledX_test, shuffledX1_test),axis=2) # (299,6,5), for 3 predictors: shuffledXdata_test=np.concatenate((shuffledX_test, shuffledX1_test, shuffledX2_test),axis=2)
         
         # X train and test wide
         data_train_wide = Xdata_train.reshape((Xdata_train.shape[0], Xdata_train.shape[1], Xdata_train.shape[2], 1))
@@ -175,7 +185,7 @@ def findCONN(data, columns, window_size, fsize, significance, amount_of_predicto
         r2_list.append(r2_y)
         
         
-        for shuffling in range(0,2):
+        for shuffling in range(0, amount_of_predictors):
             if shuffling==0 : 
                 # using shuffled predictor1
                 shuffledXdata_test=np.concatenate((shuffledX_test, X1_test),axis=2)
@@ -194,6 +204,15 @@ def findCONN(data, columns, window_size, fsize, significance, amount_of_predicto
                 mse_testloss_shuffled_pred2.append(mse_testloss_shuffled_second_predictor)
                 testdiff2=trainingloss[0]-mse_testloss_shuffled_second_predictor
                 testdiff2_list.append(testdiff2)
+            #else:
+                # using shuffled predictor3: 
+                #shuffledXdata_test=np.concatenate((X_test, X1_test, shuffledX2_test), axis=2)
+                #permuted_testdata_wide=shuffledXdata_test.reshape((shuffledXdata_test.shape[0], shuffledXdata_test.shape[1], shuffledXdata_test.shape[2], 1))
+                #predictions_with_shuffled_testdata=m2.predict(permuted_testdata_wide) # loop
+                #mse_testloss_shuffled_third_predictor=mean_squared_error(y_test, predictions_with_shuffled_testdata[:,0])
+                #mse_testloss_shuffled_pred3.append(mse_testloss_shuffled_third_predictor)
+                #testdiff3=trainingloss[0]-mse_testloss_shuffled_third_predictor
+                #testdiff3_list.append(testdiff3)
         
         executiontime_list.append(execution_time)
 
@@ -212,5 +231,5 @@ def findCONN(data, columns, window_size, fsize, significance, amount_of_predicto
     # plt.show()
 
 
-    return r2_list, total_time_for_one_run, testdiff1_list, testdiff2_list, diff_list
+    return r2_list, total_time_for_one_run, testdiff1_list, testdiff2_list, diff_list # testdiff3_list to be added
 
