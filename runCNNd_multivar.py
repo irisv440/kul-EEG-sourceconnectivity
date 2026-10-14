@@ -15,26 +15,29 @@ window_size (default=5) i.e. Window that should be considered to preprocess (res
 import pandas as pd
 import numpy as np
 import csv
+import os
 from CNNd_multivar import findCONN
 
 
 # Where should the output be saved and under which name?
 name="filename_to_fill_in" 
-path= "C:/Users/irisv/Desktop/path/end/"
+path= "output/"
+os.makedirs(path, exist_ok=True)
 
-# Datafiles to load
-# dataset1=pd.read_csv('DataFarSuperficial1500_1.csv')
-# dataset2=pd.read_csv('DataFarSuperficial1500_2.csv')
-# dataset3=pd.read_csv('DataFarSuperficial1500_3.csv')
-# dataset4=pd.read_csv('DataFarSuperficial1500_4.csv')
-# dataset5=pd.read_csv('DataFarSuperficial1500_5.csv')
+# Datafiles to load (unzip NeuralNets_sample_data.zip in the repository folder first)
+# data_dir = "NeuralNets_sample_data/FarSuperficial/"
+# dataset1=pd.read_csv(data_dir + 'DataFarSuperficial1500_1.csv')
+# dataset2=pd.read_csv(data_dir + 'DataFarSuperficial1500_2.csv')
+# dataset3=pd.read_csv(data_dir + 'DataFarSuperficial1500_3.csv')
+# dataset4=pd.read_csv(data_dir + 'DataFarSuperficial1500_4.csv')
+# dataset5=pd.read_csv(data_dir + 'DataFarSuperficial1500_5.csv')
 
-
-dataset1=pd.read_csv('DataFarDeep3T1500_june_1.csv') 
-dataset2=pd.read_csv('DataFarDeep3T1500_june_2.csv')
-dataset3=pd.read_csv('DataFarDeep3T1500_june_3.csv')
-dataset4=pd.read_csv('DataFarDeep3T1500_june_4.csv')
-dataset5=pd.read_csv('DataFarDeep3T1500_june_5.csv')
+data_dir = "NeuralNets_sample_data/FarDeep/"
+dataset1=pd.read_csv(data_dir + 'DataFarDeep3T1500_june_1.csv') 
+dataset2=pd.read_csv(data_dir + 'DataFarDeep3T1500_june_2.csv')
+dataset3=pd.read_csv(data_dir + 'DataFarDeep3T1500_june_3.csv')
+dataset4=pd.read_csv(data_dir + 'DataFarDeep3T1500_june_4.csv')
+dataset5=pd.read_csv(data_dir + 'DataFarDeep3T1500_june_5.csv')
 
 
 
@@ -212,7 +215,7 @@ sd_time_per_dataset=(np.std(np.array([TIME1, TIME2, TIME3, TIME4, TIME5])))/1000
 # #Export measures 
 measures={"Name:": name, "Sig_cutoff": 0.70, "Traintime per dataset": TIME_IN_SEC, "SD Time per dataset=": sd_time_per_dataset, "kernel width": width_of_kernel, "R2 Y": average_r2,"R2_SD":all_r2_sd,"R2_arrays_avgs":all_r2_averages, "MATRIX1 ": all_matrices[0], "m1 per pred": all_m1[0], "MATRIX2: ": all_matrices[1], "m2 per pred": all_m1[1],"MATRIX3: ": all_matrices[2], "m3 per pred": all_m1[2],"MATRIX4: ": all_matrices[3],"m4 per pred": all_m1[3],"MATRIX5: ": all_matrices[4], "m5 per pred": all_m1[4],"Sign_per_Dataset pred1: ": all_significanceweights1, "Sign_per_Dataset pred2: ": all_significanceweights2}
 # #measures={"Name:": name, "Sig_cutoff": 0.70, "R2 Y": average_r2,"R2_SD":all_r2_sd,"R2_arrays_avgs":all_r2_averages, "Sign_per_Dataset pred1: ": all_significanceweights1, "Sign_per_Dataset pred2: ": all_significanceweights2, "MATRIX1 ": all_matrices[0],  "m1 per pred": all_m1[0],"MATRIX2 ": all_matrices[1], "m2 per pred": all_m1[1]}
-with open('C:/Users/irisv/Desktop/path/end/filename_for_export_multivariate.csv', 'w') as csv_file: 
+with open(path + name + '.csv', 'w') as csv_file: 
     writer = csv.writer(csv_file)
     for key, value in measures.items():
         writer.writerow([key, value])

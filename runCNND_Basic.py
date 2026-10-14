@@ -15,6 +15,7 @@ window_size (default =5) i.e. Window that should be considered to preprocess (re
 import pandas as pd
 import numpy as np
 import csv
+import os
 
 
 from CNN2d_Basic import findCONN
@@ -92,14 +93,16 @@ def get_CONNmetrices(matrix, int):
 
 # Where should the output be saved and under which name?
 name="Filename_with_conditions_params_and_cutoff" 
-path= "C:/Users/irisv/Desktop/path/end/"
+path= "output/"
+os.makedirs(path, exist_ok=True)
 
-#Datafiles to use
-dataset1=pd.read_csv('DataFarSuperficial1500_1.csv')
-dataset2=pd.read_csv('DataFarSuperficial1500_2.csv')
-dataset3=pd.read_csv('DataFarSuperficial1500_3.csv')
-dataset4=pd.read_csv('DataFarSuperficial1500_4.csv')
-dataset5=pd.read_csv('DataFarSuperficial1500_5.csv')
+# Datafiles to use (unzip NeuralNets_sample_data.zip in the repository folder first)
+data_dir = "NeuralNets_sample_data/FarSuperficial/"
+dataset1=pd.read_csv(data_dir + 'DataFarSuperficial1500_1.csv')
+dataset2=pd.read_csv(data_dir + 'DataFarSuperficial1500_2.csv')
+dataset3=pd.read_csv(data_dir + 'DataFarSuperficial1500_3.csv')
+dataset4=pd.read_csv(data_dir + 'DataFarSuperficial1500_4.csv')
+dataset5=pd.read_csv(data_dir + 'DataFarSuperficial1500_5.csv')
 
 
 width_of_kernel=4 # time dimension 
@@ -259,13 +262,13 @@ TIME_IN_SEC=average_TIME_per_dataset/1000
 sd_time_per_dataset=(np.std(np.array([TIME1, TIME2, TIME3,TIME4,TIME5])))/1000 # in seconds instead of millisec
 
 ## Five datasets: Export 1) measures 2) dataframe actual versus predicted
-# measures={"Name:": name,"Traintime per dataset": TIME_IN_SEC, "Cutoff if >":0.70, "SD Time per dataset=": sd_time_per_dataset, "kernel height": height_of_kernel ,"R2_SD averages":all_r2_sd,"R2_averages":all_r2_averages, "M1 ": all_matrices[0], "M2: ": all_matrices[1], "M3: ": all_matrices[2], "M4: ": all_matrices[3],"M5: ": all_matrices[4], "Significance_per_Dataset: ": all_significances,
+# measures={"Name:": name,"Traintime per dataset": TIME_IN_SEC, "Cutoff if >":0.70, "SD Time per dataset=": sd_time_per_dataset, "kernel width": width_of_kernel,"R2_SD averages":all_r2_sd,"R2_averages":all_r2_averages, "M1 ": all_matrices[0], "M2: ": all_matrices[1], "M3: ": all_matrices[2], "M4: ": all_matrices[3],"M5: ": all_matrices[4], "Significance_per_Dataset: ": all_significances,
 #             "Recall per set: ": recalls, "Precision per set:": precisions, "F1-scores:": f1_scores, "TP": TPs, "FP": FPs, "TN": TNs,"FN": FNs,"partial Recall per set: ": recallsp, "partial Precision per set:": precisionsp, "partial F1-scores:": f1_scoresp, "partial TP": TPps, "partial FP": FPps, "partial TN": TNps,"partial FN": FNps}
 ## Testing with 2 datasets:
-# measures={"Name:": name,"Traintime per dataset": TIME_IN_SEC, "SD Time per dataset=": sd_time_per_dataset, "kernel height": height_of_kernel,"R2_SD":all_r2_sd,"R2_averages":all_r2_averages, "MATRIX1 ": all_matrices[0], "MATRIX2: ": all_matrices[1], "Sign_per_Dataset: ": all_significances,
+# measures={"Name:": name,"Traintime per dataset": TIME_IN_SEC, "SD Time per dataset=": sd_time_per_dataset,"kernel width": width_of_kernel,"R2_SD":all_r2_sd,"R2_averages":all_r2_averages, "MATRIX1 ": all_matrices[0], "MATRIX2: ": all_matrices[1], "Sign_per_Dataset: ": all_significances,
 #               "Recall per set: ": recalls, "Precision per set:": precisions, "F1-scores:": f1_scores, "TP": TPs, "FP": FPs, "TN": TNs,"FN": FNs,"partial Recall per set: ": recallsp, "partial Precision per set:": precisionsp, "partial F1-scores:": f1_scoresp, "partial TP": TPps, "partial FP": FPps, "partial TN": TNps,"partial FN": FNps}
 
-# with open('C:/Users/irisv/Desktop/path/end/preferred_filename_for_saving.csv', 'w') as csv_file:
+# with open(path + name + '.csv', 'w') as csv_file:
 #       writer = csv.writer(csv_file)
 #       for key, value in measures.items():
 #           writer.writerow([key, value])

@@ -1,0 +1,8 @@
+# Unzipped sample data (the zip file itself stays in the repository)
+NeuralNets_sample_data/
+
+# Output written by the scripts
+output/
+
+# Python cache
+__pycache__/
